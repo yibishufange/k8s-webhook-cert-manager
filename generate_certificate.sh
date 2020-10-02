@@ -130,8 +130,8 @@ while true; do
 done
 set -e
 
-# approve and fetch the signed certificate
-kubectl certificate approve "${csrName}"
+# approve and fetch the signed certificate . !! not working with k8s 1.19.1, running the command separately outside of the container / node 
+# kubectl certificate approve "${csrName}"
 
 set +e
 # verify certificate has been signed
