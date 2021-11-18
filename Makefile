@@ -1,5 +1,6 @@
-DOCKER_IMAGE_NAME=quay.io/didil/k8s-webhook-cert-manager
-DOCKER_IMAGE_TAG=0.13.19-1-a
+DOCKER_IMAGE_NAME = baetyltechtest/webhook-cert-manager
+DOCKER_IMAGE_TAG = v1.2
+XFLAGS:=--load
 
 .PHONY: all
 all: build
@@ -28,3 +29,12 @@ lint: check-shellcheck
 e2e-test:
 	@echo "[test] Running e2e tests"
 	./e2e-tests/tests.sh
+
+.PHONY: image
+image:
+	@echo "BUILDX: $(REGISTRY)$(MODULE):$(VERSION)"
+	@-docker buildx create --name webhook-cert-manager
+	@docker buildx use webhook-cert-manager
+	@docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+	docker buildx build $(XFLAGS) --platform linux/amd64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) -f Dockerfile .
+	docker buildx build $(XFLAGS) --platform linux/arm64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) -f Dockerfile-arm64 .
