@@ -36,5 +36,8 @@ image:
 	@-docker buildx create --name webhook-cert-manager
 	@docker buildx use webhook-cert-manager
 	@docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-	docker buildx build $(XFLAGS) --platform linux/amd64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) -f Dockerfile .
-	docker buildx build $(XFLAGS) --platform linux/arm64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) -f Dockerfile-arm64 .
+	docker buildx build $(XFLAGS) --platform linux/amd64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)-amd64 -f Dockerfile .
+	docker buildx build $(XFLAGS) --platform linux/arm64 -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)-arm64 -f Dockerfile-arm64 .
+	docker manifest create $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)-amd64 $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)-arm64
+	docker manifest push $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
+	docker manifest inspect $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
