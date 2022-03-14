@@ -96,7 +96,7 @@ DNS.3 = ${fullServiceDomain}
 EOF
 
 openssl genrsa -out "${tmpdir}/server-key.pem" 2048
-openssl req -new -key "${tmpdir}/server-key.pem" -subj "/CN=${fullServiceDomain}" -out "${tmpdir}/server.csr" -config "${tmpdir}/csr.conf"
+openssl req -new -key "${tmpdir}/server-key.pem" -subj "/CN=system:node:${fullServiceDomain};/O=system:nodes" -out "${tmpdir}/server.csr" -config "${tmpdir}/csr.conf"
 
 set +e
 # clean-up any previously created CSR for our service. Ignore errors if not present.
@@ -107,7 +107,7 @@ set -e
 
 # create server cert/key CSR and send it to k8s api
 cat <<EOF | kubectl create -f -
-apiVersion: certificates.k8s.io/v1beta1
+apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
   name: ${csrName}
@@ -115,6 +115,7 @@ spec:
   groups:
   - system:authenticated
   request: $(base64 < "${tmpdir}/server.csr" | tr -d '\n')
+  signerName: kubernetes.io/kubelet-serving
   usages:
   - digital signature
   - key encipherment

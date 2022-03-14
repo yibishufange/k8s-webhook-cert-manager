@@ -1,5 +1,5 @@
 DOCKER_IMAGE_NAME = baetyltechtest/webhook-cert-manager
-DOCKER_IMAGE_TAG = v1.2
+DOCKER_IMAGE_TAG = v1.3
 XFLAGS:=--load
 
 .PHONY: all
